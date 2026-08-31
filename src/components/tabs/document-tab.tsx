@@ -21,24 +21,29 @@ export function DocumentTab({
   return (
     <div
       className={cn(
-        "flex items-center gap-1 rounded-t-md border border-b-0 px-3 py-2 text-sm",
+        "relative -mb-px flex h-11 w-48 shrink-0 border border-b-0 border-border",
         active
-          ? "bg-background text-foreground"
+          ? "z-10 bg-background text-foreground"
           : "bg-muted/40 text-foreground/65",
       )}
     >
       <button
         type="button"
         onClick={() => onSelect(document.id)}
-        className="flex items-center gap-2 text-left focus-visible:outline-none"
+        className={cn(
+          "flex h-full w-full items-center justify-between gap-3 px-3 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60",
+          active
+            ? "bg-background text-foreground"
+            : "bg-muted/40 text-foreground/65 hover:bg-muted/60 hover:text-foreground",
+        )}
       >
-        <span>{document.title}</span>
+        <span className="min-w-0 flex-1 truncate">{document.title}</span>
       </button>
 
       {document.isClosable ? (
         <DocumentCloseButton
           onClose={() => onClose(document.id)}
-          className="ml-1"
+          className="absolute top-1/2 right-1 -translate-y-1/2"
         />
       ) : null}
     </div>

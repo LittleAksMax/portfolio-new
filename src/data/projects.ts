@@ -2,29 +2,30 @@ import type { ProjectData } from "@/types/projects";
 
 export const projects: ProjectData[] = [
   {
-    id: "project-archive-01",
-    title: "Project Alpha",
-    description: "Placeholder project description for the portfolio scaffold.",
-    tags: ["React", "TypeScript", "Scaffold"],
+    id: "project-portfolio-documents",
+    title: "Portfolio Document System",
+    description:
+      "Interactive document-style portfolio built with Next.js and TypeScript, including tab navigation and a lightweight command palette.",
+    tags: ["Next.js", "TypeScript", "UI"],
     year: "2026",
-    slug: "project-alpha",
+    slug: "portfolio-document-system",
   },
   {
-    id: "project-archive-02",
-    title: "Project Beta",
+    id: "project-vectric-internship",
+    title: "Vectric Internship",
     description:
-      "Placeholder project description for a second sample document.",
-    tags: ["Next.js", "Documents", "UI"],
+      "TODO: expand with the detailed internship summary from the previous portfolio site, focusing on software engineering and tooling work.",
+    tags: ["C++", "Software Engineering", "Internship"],
     year: "2025",
-    slug: "project-beta",
+    slug: "vectric-internship",
   },
   {
-    id: "project-archive-03",
-    title: "Project Gamma",
+    id: "project-academic-work",
+    title: "Academic and Coursework Projects",
     description:
-      "Placeholder project description for another sample project entry.",
-    tags: ["Product", "Frontend", "Architecture"],
-    year: "2024",
-    slug: "project-gamma",
+      "TODO: add the most relevant Warwick projects across HPC, databases, AI/ML, and systems work.",
+    tags: ["HPC", "AI", "Databases"],
+    year: "2023",
+    slug: "academic-work",
   },
 ];

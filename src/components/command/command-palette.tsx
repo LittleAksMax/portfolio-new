@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,7 @@ export function CommandPalette({
 }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
   const visibleCommands = useMemo(() => commands, [commands]);
 
@@ -38,6 +39,40 @@ export function CommandPalette({
       setActiveIndex(0);
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const nextIndex = Math.min(
+      activeIndex,
+      Math.max(visibleCommands.length - 1, 0),
+    );
+
+    itemRefs.current[nextIndex]?.focus();
+  }, [activeIndex, open, visibleCommands.length]);
+
+  useEffect(() => {
+    setActiveIndex((current) =>
+      Math.min(current, Math.max(visibleCommands.length - 1, 0)),
+    );
+  }, [visibleCommands.length]);
+
+  const moveSelection = (delta: number) => {
+    if (!visibleCommands.length) {
+      return;
+    }
+
+    setActiveIndex((current) => {
+      const nextIndex =
+        (current + delta + visibleCommands.length) % visibleCommands.length;
+      window.requestAnimationFrame(() => {
+        itemRefs.current[nextIndex]?.focus();
+      });
+      return nextIndex;
+    });
+  };
 
   if (!open) {
     return null;
@@ -58,14 +93,12 @@ export function CommandPalette({
             onKeyDown={(event) => {
               if (event.key === "ArrowDown") {
                 event.preventDefault();
-                setActiveIndex((current) =>
-                  Math.min(current + 1, visibleCommands.length - 1),
-                );
+                moveSelection(1);
               }
 
               if (event.key === "ArrowUp") {
                 event.preventDefault();
-                setActiveIndex((current) => Math.max(current - 1, 0));
+                moveSelection(-1);
               }
 
               if (event.key === "Enter" && visibleCommands[activeIndex]) {
@@ -83,11 +116,30 @@ export function CommandPalette({
             {visibleCommands.map((command, index) => (
               <CommandItem
                 key={command.id}
+                ref={(node) => {
+                  itemRefs.current[index] = node;
+                }}
                 label={command.label}
                 description={command.description}
                 shortcut={command.shortcut}
                 active={index === activeIndex}
                 onSelect={() => handleExecute(command)}
+                onKeyDown={(event) => {
+                  if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    moveSelection(1);
+                  }
+
+                  if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    moveSelection(-1);
+                  }
+
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    handleExecute(command);
+                  }
+                }}
               />
             ))}
           </CommandList>

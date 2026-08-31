@@ -16,7 +16,7 @@ export function MainContent({
   onOpenProject,
 }: MainContentProps) {
   return (
-    <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
+    <main className="flex-1 overflow-y-auto px-4 py-6 font-mono sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-5xl">
         {activeDocument.type === "overview" ? (
           <OverviewDocument projects={projects} onOpenProject={onOpenProject} />

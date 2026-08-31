@@ -18,8 +18,8 @@ export function DocumentTabBar({
   onCloseDocument,
 }: DocumentTabBarProps) {
   return (
-    <div className="border-b border-border bg-background/95 px-4 pt-4 backdrop-blur">
-      <div className="flex items-end gap-2 overflow-x-auto">
+    <div className="border-b border-border bg-background/95 font-mono backdrop-blur">
+      <div className="flex items-end gap-0 overflow-x-auto">
         {documents.map((document) => (
           <DocumentTab
             key={document.id}
@@ -30,7 +30,6 @@ export function DocumentTabBar({
           />
         ))}
       </div>
-      <div className="mt-4 h-px bg-border" />
     </div>
   );
 }

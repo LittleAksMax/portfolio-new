@@ -4,11 +4,10 @@ import type { ProjectData } from "@/types/projects";
 
 import { MarkdownDivider } from "@/components/common/markdown-divider";
 import { MarkdownHeading } from "@/components/common/markdown-heading";
+import { MarkdownLink } from "@/components/common/markdown-link";
 import { MarkdownList } from "@/components/common/markdown-list";
 import { MarkdownParagraph } from "@/components/common/markdown-paragraph";
-import { MarkdownQuote } from "@/components/common/markdown-quote";
 import { Section } from "@/components/common/section";
-import { ProjectGrid } from "@/components/projects/project-grid";
 
 interface OverviewDocumentProps {
   projects: ProjectData[];
@@ -23,27 +22,38 @@ export function OverviewDocument({
     <article className="space-y-10">
       <header className="space-y-4">
         <MarkdownHeading level={1}>
-          David R. | MEng CS @ Warwick | SWE Intern @ Bloomberg, Ex-Vectric
+          David R. | MEng CS @ Warwick | Incoming @ Bloomberg
         </MarkdownHeading>
-        <MarkdownParagraph>
-          This Overview document is a placeholder scaffold for a document-style
-          portfolio. The structure is laid out so future content can be dropped
-          in without redesigning the document model.
-        </MarkdownParagraph>
       </header>
 
       <Section id="overview">
         <MarkdownHeading level={2}>Overview</MarkdownHeading>
         <MarkdownParagraph>
-          Placeholder biography content goes here. The aim is to keep the
-          portfolio readable as a single document while preserving the
-          interaction pattern of opening related work in separate tabs.
+          I am a Computer Science student at the University of Warwick with
+          software engineering experience in industry.{" "}
+          <MarkdownLink href="/David_Rosental_CV.pdf">
+            My CV is available here
+          </MarkdownLink>
+          .
         </MarkdownParagraph>
 
         <MarkdownHeading level={3}>Education</MarkdownHeading>
         <MarkdownParagraph>
-          Placeholder education notes live here as a subsection instead of a
-          separate top-level section.
+          MEng Computer Science, University of Warwick (2023 -- 2027). Relevant
+          modules include High Performance Computing, Databases, Artificial
+          Intelligence and Machine Learning, Operating Systems, and Computer
+          Networks.
+        </MarkdownParagraph>
+        <MarkdownList>
+          <li>MEng Computer Science</li>
+          <li>Institution: University of Warwick</li>
+          <li>Expected graduation: 2027</li>
+        </MarkdownList>
+        <MarkdownParagraph>
+          <MarkdownLink href="/education-history.md">
+            My full education history is here
+          </MarkdownLink>
+          .
         </MarkdownParagraph>
       </Section>
 
@@ -53,19 +63,23 @@ export function OverviewDocument({
         <MarkdownHeading level={2}>Table of Contents</MarkdownHeading>
         <MarkdownList>
           <li>
-            <a href="#overview">Overview</a>
+            <MarkdownLink href="#overview">Overview</MarkdownLink>
           </li>
           <li>
-            <a href="#interests-and-skills">Interests and Skills</a>
+            <MarkdownLink href="#interests-and-skills">
+              Interests and Skills
+            </MarkdownLink>
           </li>
           <li>
-            <a href="#work-experience">Work Experience</a>
+            <MarkdownLink href="#work-experience">Work Experience</MarkdownLink>
           </li>
           <li>
-            <a href="#projects">Projects</a>
+            <MarkdownLink href="#projects">Projects</MarkdownLink>
           </li>
           <li>
-            <a href="#courses-certifications">Courses / Certifications</a>
+            <MarkdownLink href="#courses-certifications">
+              Courses / Certifications
+            </MarkdownLink>
           </li>
         </MarkdownList>
       </Section>
@@ -73,37 +87,54 @@ export function OverviewDocument({
       <Section id="interests-and-skills">
         <MarkdownHeading level={2}>Interests and Skills</MarkdownHeading>
         <MarkdownParagraph>
-          Placeholder content for interests and skills. This section will
-          eventually describe focus areas, tooling, and working style.
+          I am particularly interested in software engineering, systems,
+          high-performance computing, and applied AI/ML. My work typically sits
+          at the intersection of performance, tooling, and product impact.
         </MarkdownParagraph>
-        <MarkdownQuote>
-          Keep this section concise and factual once real content is added.
-        </MarkdownQuote>
+        <MarkdownList>
+          <li>Languages: C++, Python, TypeScript, JavaScript, Java, SQL</li>
+          <li>Web: React, Next.js, HTML, CSS</li>
+          <li>
+            Tools: Git, Linux, Docker, HPC workflows, debugging, profiling
+          </li>
+          <li>
+            Areas: distributed systems, databases, AI/ML, performance tuning
+          </li>
+        </MarkdownList>
       </Section>
 
       <Section id="work-experience">
         <MarkdownHeading level={2}>Work Experience</MarkdownHeading>
         <MarkdownParagraph>
-          Placeholder content for work experience. The layout is prepared for
-          future entries without requiring a new route or a different document
-          format.
+          <strong>Bloomberg</strong> — SWE Intern. TODO: add fuller internship
+          details from the updated CV and internship summary.
+        </MarkdownParagraph>
+        <MarkdownParagraph>
+          <strong>Vectric</strong> — Software Engineering Intern. TODO: expand
+          this section using the more detailed old portfolio write-up.
         </MarkdownParagraph>
       </Section>
 
       <Section id="projects">
         <MarkdownHeading level={2}>Projects</MarkdownHeading>
-        <MarkdownParagraph>
-          Clicking a project opens a new document tab. Duplicate tabs are
-          prevented by the document context.
-        </MarkdownParagraph>
-        <ProjectGrid projects={projects} onOpen={onOpenProject} />
+        <MarkdownList>
+          {projects.map((project) => (
+            <li key={project.id}>
+              <MarkdownLink onClick={() => onOpenProject(project)} href="#">
+                {project.title}
+              </MarkdownLink>{" "}
+              [{project.tags.join(", ")}]: {project.description}
+            </li>
+          ))}
+        </MarkdownList>
       </Section>
 
       <Section id="courses-certifications">
         <MarkdownHeading level={2}>Courses / Certifications</MarkdownHeading>
         <MarkdownParagraph>
-          Placeholder content for courses and certifications. This area can grow
-          into a richer document later.
+          Relevant coursework includes HPC, databases, AI/ML, operating systems,
+          and networking. TODO: add certifications and external courses where
+          relevant.
         </MarkdownParagraph>
       </Section>
     </article>

@@ -137,3 +137,5 @@
     @apply font-sans;
   }
 }
+
+/* File-style UI uses a coding font so tabs and document surfaces read like source files. */
