@@ -10,17 +10,21 @@ import {
 
 import {
   createOverviewDocument,
+  createExperienceDocument,
   createProjectDocument,
   toDocumentRecord,
 } from "@/lib/document-utils";
 import type { DocumentRecord, OpenDocumentInput } from "@/types/documents";
+import type { ExperienceData } from "@/types/experiences";
 import type { ProjectData } from "@/types/projects";
 
 interface DocumentContextValue {
   documents: DocumentRecord[];
   activeDocumentId: string;
   activeDocument: DocumentRecord;
-  openDocument: (document: OpenDocumentInput | ProjectData) => void;
+  openDocument: (
+    document: OpenDocumentInput | ProjectData | ExperienceData,
+  ) => void;
   closeDocument: (documentId: string) => void;
   setActiveDocument: (documentId: string) => void;
 }
@@ -28,9 +32,9 @@ interface DocumentContextValue {
 const DocumentContext = createContext<DocumentContextValue | null>(null);
 
 function isProjectData(
-  document: OpenDocumentInput | ProjectData,
+  document: OpenDocumentInput | ProjectData | ExperienceData,
 ): document is ProjectData {
-  return "tags" in document && "slug" in document && "year" in document;
+  return "type" in document && document.type === "project";
 }
 
 export function DocumentProvider({ children }: { children: React.ReactNode }) {
@@ -47,10 +51,12 @@ export function DocumentProvider({ children }: { children: React.ReactNode }) {
   );
 
   const openDocument = useCallback(
-    (document: OpenDocumentInput | ProjectData) => {
+    (document: OpenDocumentInput | ProjectData | ExperienceData) => {
       const nextDocument = isProjectData(document)
         ? createProjectDocument(document)
-        : toDocumentRecord(document);
+        : document.type === "experience"
+          ? createExperienceDocument(document)
+          : toDocumentRecord(document);
 
       setDocuments((currentDocuments) => {
         const existingDocument = currentDocuments.find(

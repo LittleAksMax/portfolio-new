@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 
 interface DocumentCloseButtonProps {
   onClose: () => void;
@@ -17,11 +18,11 @@ export function DocumentCloseButton({
       onClick={onClose}
       aria-label="Close document"
       className={cn(
-        "inline-flex size-6 items-center justify-center rounded-sm text-xs text-foreground/60 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+        "inline-flex size-5 items-center justify-center rounded-sm text-foreground/60 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
         className,
       )}
     >
-      x
+      <X aria-hidden="true" size={14} strokeWidth={2.25} />
     </button>
   );
 }

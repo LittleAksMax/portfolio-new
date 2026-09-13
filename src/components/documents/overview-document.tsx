@@ -1,6 +1,8 @@
 "use client";
 
 import type { ProjectData } from "@/types/projects";
+import type { ExperienceData } from "@/types/experiences";
+import type { OpenDocumentInput } from "@/types/documents";
 
 import { MarkdownDivider } from "@/components/common/markdown-divider";
 import { MarkdownHeading } from "@/components/common/markdown-heading";
@@ -11,108 +13,85 @@ import { Section } from "@/components/common/section";
 
 interface OverviewDocumentProps {
   projects: ProjectData[];
-  onOpenProject: (project: ProjectData) => void;
+  experiences: ExperienceData[];
+  onOpenDocument: (
+    document: ProjectData | ExperienceData | OpenDocumentInput,
+  ) => void;
 }
 
 export function OverviewDocument({
   projects,
-  onOpenProject,
+  experiences,
+  onOpenDocument,
 }: OverviewDocumentProps) {
   return (
     <article className="space-y-10">
       <header className="space-y-4">
         <MarkdownHeading level={1}>
-          David R. | MEng CS @ Warwick | Incoming @ Bloomberg
+          David R. | MEng CS @ Warwick
         </MarkdownHeading>
       </header>
 
       <Section id="overview">
         <MarkdownHeading level={2}>Overview</MarkdownHeading>
         <MarkdownParagraph>
-          I am a Computer Science student at the University of Warwick with
-          software engineering experience in industry.{" "}
-          <MarkdownLink href="/David_Rosental_CV.pdf">
-            My CV is available here
+          <MarkdownLink
+            href="/David_Rosental_CV.pdf"
+            target="_blank"
+            rel="noreferrer"
+          >
+            My current CV is available here.
           </MarkdownLink>
-          .
         </MarkdownParagraph>
 
-        <MarkdownHeading level={3}>Education</MarkdownHeading>
         <MarkdownParagraph>
-          MEng Computer Science, University of Warwick (2023 -- 2027). Relevant
-          modules include High Performance Computing, Databases, Artificial
-          Intelligence and Machine Learning, Operating Systems, and Computer
-          Networks.
+          <strong>Interests:</strong> Distributed Systems, Platform Engineering,
+          Developer Infrastructure, Cloud Computing, Scalability, Performance
+          Engineering
         </MarkdownParagraph>
-        <MarkdownList>
-          <li>MEng Computer Science</li>
-          <li>Institution: University of Warwick</li>
-          <li>Expected graduation: 2027</li>
-        </MarkdownList>
+
         <MarkdownParagraph>
-          <MarkdownLink href="/education-history.md">
-            My full education history is here
+          <strong>Education:</strong> Currently final-year MEng Computer Science
+          at the University of Warwick,
+          <em> 2023--2027</em>.{" "}
+          <MarkdownLink
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              onOpenDocument({
+                id: "education",
+                title: "Education.md",
+                type: "education",
+              });
+            }}
+          >
+            Full education history is available here.
           </MarkdownLink>
-          .
         </MarkdownParagraph>
       </Section>
 
       <MarkdownDivider />
 
-      <Section id="table-of-contents">
-        <MarkdownHeading level={2}>Table of Contents</MarkdownHeading>
-        <MarkdownList>
-          <li>
-            <MarkdownLink href="#overview">Overview</MarkdownLink>
-          </li>
-          <li>
-            <MarkdownLink href="#interests-and-skills">
-              Interests and Skills
-            </MarkdownLink>
-          </li>
-          <li>
-            <MarkdownLink href="#work-experience">Work Experience</MarkdownLink>
-          </li>
-          <li>
-            <MarkdownLink href="#projects">Projects</MarkdownLink>
-          </li>
-          <li>
-            <MarkdownLink href="#courses-certifications">
-              Courses / Certifications
-            </MarkdownLink>
-          </li>
-        </MarkdownList>
-      </Section>
-
-      <Section id="interests-and-skills">
-        <MarkdownHeading level={2}>Interests and Skills</MarkdownHeading>
-        <MarkdownParagraph>
-          I am particularly interested in software engineering, systems,
-          high-performance computing, and applied AI/ML. My work typically sits
-          at the intersection of performance, tooling, and product impact.
-        </MarkdownParagraph>
-        <MarkdownList>
-          <li>Languages: C++, Python, TypeScript, JavaScript, Java, SQL</li>
-          <li>Web: React, Next.js, HTML, CSS</li>
-          <li>
-            Tools: Git, Linux, Docker, HPC workflows, debugging, profiling
-          </li>
-          <li>
-            Areas: distributed systems, databases, AI/ML, performance tuning
-          </li>
-        </MarkdownList>
-      </Section>
-
       <Section id="work-experience">
         <MarkdownHeading level={2}>Work Experience</MarkdownHeading>
-        <MarkdownParagraph>
-          <strong>Bloomberg</strong> — SWE Intern. TODO: add fuller internship
-          details from the updated CV and internship summary.
-        </MarkdownParagraph>
-        <MarkdownParagraph>
-          <strong>Vectric</strong> — Software Engineering Intern. TODO: expand
-          this section using the more detailed old portfolio write-up.
-        </MarkdownParagraph>
+        {experiences.map((experience) => (
+          <MarkdownParagraph key={experience.id}>
+            <MarkdownLink
+              href="#"
+              onClick={(event) => {
+                event.preventDefault();
+                onOpenDocument(experience);
+              }}
+            >
+              <strong>{experience.title}</strong>
+            </MarkdownLink>{" "}
+            — <strong>{experience.role}</strong> <em>{experience.year}</em>
+            <br />
+            {experience.description}
+            <br />
+            {experience.tags.map((tag) => `[${tag}]`).join(" ")}
+          </MarkdownParagraph>
+        ))}
       </Section>
 
       <Section id="projects">
@@ -120,10 +99,17 @@ export function OverviewDocument({
         <MarkdownList>
           {projects.map((project) => (
             <li key={project.id}>
-              <MarkdownLink onClick={() => onOpenProject(project)} href="#">
+              <MarkdownLink
+                href="#"
+                onClick={(event) => {
+                  event.preventDefault();
+                  onOpenDocument(project);
+                }}
+              >
                 {project.title}
               </MarkdownLink>{" "}
-              [{project.tags.join(", ")}]: {project.description}
+              [<strong>{project.tags.join(", ")}</strong>]:{" "}
+              {project.description}
             </li>
           ))}
         </MarkdownList>
@@ -132,9 +118,19 @@ export function OverviewDocument({
       <Section id="courses-certifications">
         <MarkdownHeading level={2}>Courses / Certifications</MarkdownHeading>
         <MarkdownParagraph>
-          Relevant coursework includes HPC, databases, AI/ML, operating systems,
-          and networking. TODO: add certifications and external courses where
-          relevant.
+          <MarkdownLink
+            href="#"
+            onClick={(event) => {
+              event.preventDefault();
+              onOpenDocument({
+                id: "certifications",
+                title: "Certifications.md",
+                type: "certification",
+              });
+            }}
+          >
+            View certifications and course notes.
+          </MarkdownLink>
         </MarkdownParagraph>
       </Section>
     </article>

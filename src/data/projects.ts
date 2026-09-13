@@ -2,30 +2,28 @@ import type { ProjectData } from "@/types/projects";
 
 export const projects: ProjectData[] = [
   {
-    id: "project-portfolio-documents",
-    title: "Portfolio Document System",
+    id: "lightweight-foundation-model",
+    title: "Lightweight Foundation Model",
+    type: "project",
     description:
-      "Interactive document-style portfolio built with Next.js and TypeScript, including tab navigation and a lightweight command palette.",
-    tags: ["Next.js", "TypeScript", "UI"],
-    year: "2026",
-    slug: "portfolio-document-system",
+      "Created lightweight foundation model and integrated it into TIA Toolbox for Whole-Slide Images",
+    tags: [
+      "Python",
+      "Machine Learning",
+      "Foundation Models",
+      "Image Processing",
+    ],
+    year: "2026--2027",
+    slug: "lightweight-foundation-model",
   },
   {
-    id: "project-vectric-internship",
-    title: "Vectric Internship",
+    id: "amazon-ppc-platform",
+    title: "Amazon PPC Platform",
+    type: "project",
     description:
-      "TODO: expand with the detailed internship summary from the previous portfolio site, focusing on software engineering and tooling work.",
-    tags: ["C++", "Software Engineering", "Internship"],
-    year: "2025",
-    slug: "vectric-internship",
-  },
-  {
-    id: "project-academic-work",
-    title: "Academic and Coursework Projects",
-    description:
-      "TODO: add the most relevant Warwick projects across HPC, databases, AI/ML, and systems work.",
-    tags: ["HPC", "AI", "Databases"],
-    year: "2023",
-    slug: "academic-work",
+      "PPC platform allowing users to create custom policies to bid for ad spots using a simple DSL.",
+    tags: ["Go", "Python", "Microservices"],
+    year: "2025--2026",
+    slug: "amazon-ppc-platform",
   },
 ];

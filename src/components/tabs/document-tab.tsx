@@ -21,10 +21,10 @@ export function DocumentTab({
   return (
     <div
       className={cn(
-        "relative -mb-px flex h-11 w-48 shrink-0 border border-b-0 border-border",
+        "relative -mb-px flex h-10 w-48 shrink-0 border border-b-0 border-border",
         active
           ? "z-10 bg-background text-foreground"
-          : "bg-muted/40 text-foreground/65",
+          : "bg-muted/60 text-foreground/65",
       )}
     >
       <button
@@ -34,7 +34,7 @@ export function DocumentTab({
           "flex h-full w-full items-center justify-between gap-3 px-3 text-left text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/60",
           active
             ? "bg-background text-foreground"
-            : "bg-muted/40 text-foreground/65 hover:bg-muted/60 hover:text-foreground",
+            : "bg-muted/60 text-foreground/65 hover:bg-muted hover:text-foreground",
         )}
       >
         <span className="min-w-0 flex-1 truncate">{document.title}</span>

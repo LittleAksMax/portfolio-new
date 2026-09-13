@@ -14,7 +14,9 @@ export function ProjectDocument({ document }: ProjectDocumentProps) {
   return (
     <article className="space-y-8">
       <header className="space-y-3">
-        <MarkdownHeading level={1}>{document.title}</MarkdownHeading>
+        <MarkdownHeading level={1}>
+          {document.title.replace(/\.md$/, "")}
+        </MarkdownHeading>
         <MarkdownParagraph>
           This is a placeholder project document. It exists to mirror the
           editor-style document flow without introducing real project content

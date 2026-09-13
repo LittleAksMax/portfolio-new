@@ -14,7 +14,13 @@ export function MarkdownList({
   const Tag = ordered ? "ol" : "ul";
 
   return (
-    <Tag className={cn("space-y-2 pl-5 text-sm leading-7", className)}>
+    <Tag
+      className={cn(
+        "space-y-2 pl-5 text-sm leading-7",
+        ordered ? "list-decimal" : "list-disc",
+        className,
+      )}
+    >
       {children}
     </Tag>
   );

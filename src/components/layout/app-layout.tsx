@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { projects } from "@/data/projects";
+import { experiences } from "@/data/experiences";
 import { useDocumentKeyboardShortcuts } from "@/hooks/use-document-keyboard-shortcuts";
 import { useDocumentContext } from "@/contexts/document-context";
 
@@ -66,7 +67,8 @@ export function AppLayout() {
       <MainContent
         activeDocument={activeDocument}
         projects={projects}
-        onOpenProject={openDocument}
+        experiences={experiences}
+        onOpenDocument={openDocument}
       />
 
       <FloatingHelp />

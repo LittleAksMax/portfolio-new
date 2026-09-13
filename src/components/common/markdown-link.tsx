@@ -14,7 +14,7 @@ export function MarkdownLink({
     <a
       {...props}
       className={cn(
-        "font-medium text-foreground underline decoration-2 underline-offset-4 transition-colors hover:text-primary",
+        "font-medium text-blue-600 underline decoration-2 underline-offset-4 transition-colors hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300",
         className,
       )}
     >
