@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build Docker image, publish to ECR, deploy with SSH
 
 on:
   pull_request:
