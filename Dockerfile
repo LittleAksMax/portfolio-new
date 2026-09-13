@@ -1,9 +1,9 @@
 FROM node:26-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN corepack enable && yarn install --frozen-lockfile --ignore-scripts
 COPY . .
-RUN npm run build
+RUN yarn build
 
 FROM nginxinc/nginx-unprivileged:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
