@@ -1,12 +1,11 @@
-FROM node:26-alpine3.23 AS builder
-EXPOSE 8080
+FROM node:26-alpine AS builder
 WORKDIR /app
-COPY package.json ./
-COPY yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
-RUN yarn build
+RUN npm run build
 
-FROM nginxinc/nginx-unprivileged:alpine3.24-perl AS stager
-COPY ./etc/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder ./app/build /usr/share/nginx/html
+FROM nginxinc/nginx-unprivileged:alpine
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/out /usr/share/nginx/html
+EXPOSE 8080
