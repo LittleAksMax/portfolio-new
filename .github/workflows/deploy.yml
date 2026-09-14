@@ -10,7 +10,6 @@ permissions:
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-2' }}
-  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
 jobs:
   validate:
@@ -33,6 +32,8 @@ jobs:
     if: github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
     environment: "CD Env"
+    env:
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
     outputs:
       image: ${{ steps.image.outputs.image }}
     steps:
