@@ -68,42 +68,54 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
   deploy:
-    name: Deploy over SSH
+    name: Deploy through SSM
     needs: publish
     if: needs.publish.result == 'success'
     runs-on: ubuntu-latest
     environment: "CD Env"
     env:
       IMAGE: ${{ needs.publish.outputs.image }}
-      SSH_HOST: ${{ secrets.SSH_HOST }}
-      SSH_USER: ${{ secrets.SSH_USER }}
+      EC2_INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
     steps:
-      - name: Create deployment marker
-        run: |
-          mkdir -p .deploy
-          touch .deploy/marker
-
-      - name: Deploy with SSH
+      - name: Deploy through SSM
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-        uses: easingthemes/ssh-deploy@v6.0.1
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USER }}
-          REMOTE_PORT: "22"
-          SOURCE: ".deploy/marker"
-          TARGET: "/tmp/portfolio-deploy/"
-          SSH_CMD_ARGS: "-o StrictHostKeyChecking=no"
-          SCRIPT_AFTER_REQUIRED: true
-          SCRIPT_AFTER: |
-            set -eu
-            registry="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
-            aws ecr get-login-password --region "${{ env.AWS_REGION }}" | docker login --username AWS --password-stdin "$registry"
-            docker pull "${{ env.IMAGE }}"
-            docker rm -f portfolio 2>/dev/null || true
-            mkdir -p "${{ env.DEPLOY_PATH }}"
-            docker run -d --name portfolio --restart unless-stopped -p "${{ env.DEPLOY_PORT }}:8080" "${{ env.IMAGE }}"
-            docker image prune -f
+        run: |
+          test -n "$EC2_INSTANCE_ID" || { echo "EC2_INSTANCE_ID is empty" >&2; exit 1; }
+
+          remote_script=$(cat <<EOF
+          set -eu
+          registry="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+          aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$registry"
+          docker pull "$IMAGE"
+          docker rm -f portfolio 2>/dev/null || true
+          mkdir -p "$DEPLOY_PATH"
+          docker run -d --name portfolio --restart unless-stopped -p "$DEPLOY_PORT:8080" "$IMAGE"
+          docker image prune -f
+          EOF
+          )
+
+          parameters=$(jq -n --arg script "$remote_script" '{commands: [$script]}')
+          command_id=$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy portfolio $GITHUB_SHA" \
+            --parameters "$parameters" \
+            --query 'Command.CommandId' \
+            --output text)
+
+          echo "SSM command: $command_id"
+          aws ssm wait command-executed \
+            --region "$AWS_REGION" \
+            --command-id "$command_id" \
+            --instance-id "$EC2_INSTANCE_ID"
+
+          aws ssm get-command-invocation \
+            --region "$AWS_REGION" \
+            --command-id "$command_id" \
+            --instance-id "$EC2_INSTANCE_ID" \
+            --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
+            --output json
