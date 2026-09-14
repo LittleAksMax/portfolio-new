@@ -32,6 +32,7 @@ jobs:
     name: Publish merged image
     if: github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
+    environment: "CD Env"
     outputs:
       image: ${{ steps.image.outputs.image }}
     steps:
@@ -70,7 +71,7 @@ jobs:
     needs: publish
     if: needs.publish.result == 'success'
     runs-on: ubuntu-latest
-    environment: production
+    environment: "CD Env"
     env:
       IMAGE: ${{ needs.publish.outputs.image }}
       SSH_HOST: ${{ secrets.SSH_HOST }}
