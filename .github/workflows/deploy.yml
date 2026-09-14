@@ -79,7 +79,6 @@ jobs:
       SSH_USER: ${{ secrets.SSH_USER }}
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-      RUNTIME_ENV_FILE: ${{ secrets.RUNTIME_ENV_FILE }}
     steps:
       - name: Prepare SSH
         env:
@@ -95,7 +94,7 @@ jobs:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
           registry="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-          printf '%s' "$RUNTIME_ENV_FILE" | ssh -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
+            ssh -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
             "set -eu
             umask 077
             mkdir -p '$DEPLOY_PATH'
