@@ -10,6 +10,7 @@ permissions:
 
 env:
   AWS_REGION: ${{ vars.AWS_REGION || 'eu-west-2' }}
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
 jobs:
   validate:
@@ -32,15 +33,13 @@ jobs:
     if: github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
     environment: "CD Env"
-    env:
-      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
     outputs:
       image: ${{ steps.image.outputs.image }}
     steps:
       - name: Check out merged source
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: main # Explicitly checkout main instead of merge_commit_sha
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -56,7 +55,7 @@ jobs:
         id: image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: echo "image=$REGISTRY/$ECR_REPOSITORY:${{ github.event.pull_request.merge_commit_sha }}" >> "$GITHUB_OUTPUT"
+        run: echo "image=$REGISTRY/$ECR_REPOSITORY:$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Build and push image
         uses: docker/build-push-action@v6
