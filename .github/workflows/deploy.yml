@@ -94,7 +94,7 @@ jobs:
           remote_script=$(cat <<EOF
           set -eu
           registry="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-          aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$registry"
+          aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "\$registry"
           docker pull "$IMAGE"
           docker rm -f portfolio 2>/dev/null || true
           mkdir -p "$DEPLOY_PATH"
@@ -117,11 +117,13 @@ jobs:
           aws ssm wait command-executed \
             --region "$AWS_REGION" \
             --command-id "$command_id" \
-            --instance-id "$EC2_INSTANCE_ID"
+            --instance-id "$EC2_INSTANCE_ID" || true
 
-          aws ssm get-command-invocation \
+          result=$(aws ssm get-command-invocation \
             --region "$AWS_REGION" \
             --command-id "$command_id" \
             --instance-id "$EC2_INSTANCE_ID" \
             --query '{Status:Status,Output:StandardOutputContent,Error:StandardErrorContent}' \
-            --output json
+            --output json)
+          echo "$result"
+          test "$(jq -r '.Status' <<< "$result")" = "Success"
