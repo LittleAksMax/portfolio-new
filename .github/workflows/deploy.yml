@@ -79,6 +79,12 @@ jobs:
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
     steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+
       - name: Deploy through SSM
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
