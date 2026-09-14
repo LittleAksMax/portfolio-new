@@ -80,26 +80,55 @@ jobs:
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
       DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
     steps:
-      - name: Prepare SSH
+      - name: Validate SSH settings
+        run: |
+          test -n "$SSH_HOST" || { echo "SSH_HOST is empty" >&2; exit 1; }
+          test -n "$SSH_USER" || { echo "SSH_USER is empty" >&2; exit 1; }
+          getent hosts "$SSH_HOST"
+
+      - name: Install SSH key
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           install -m 700 -d ~/.ssh
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
 
-      - name: Pull and run image
+      - name: Scan SSH host key
+        run: |
+          ssh-keyscan -T 10 -H "$SSH_HOST" > ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts || {
+            echo "No SSH host key received from $SSH_HOST" >&2
+            exit 1
+          }
+
+      - name: Test SSH connection
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=10 \
+            -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
+            'printf "SSH connection succeeded\\n"'
+
+      - name: Log in to ECR on deployment host
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
           registry="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
-            ssh -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
+          ssh -o BatchMode=yes -o ConnectTimeout=10 \
+            -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
+            "aws ecr get-login-password --region '$AWS_REGION' | docker login --username AWS --password-stdin '$registry'"
+
+      - name: Pull image on deployment host
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=10 \
+            -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
+            "docker pull '$IMAGE'"
+
+      - name: Run image on deployment host
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=10 \
+            -i ~/.ssh/deploy_key "$SSH_USER@$SSH_HOST" \
             "set -eu
-            umask 077
             mkdir -p '$DEPLOY_PATH'
-            aws ecr get-login-password --region '$AWS_REGION' | docker login --username AWS --password-stdin '$registry'
-            docker pull '$IMAGE'
             docker rm -f portfolio 2>/dev/null || true
             docker run -d --name portfolio --restart unless-stopped -p '$DEPLOY_PORT:8080' '$IMAGE'
             docker image prune -f"
